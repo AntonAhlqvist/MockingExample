@@ -221,4 +221,93 @@ class BookingSystemTest {
         assertThat(result)
                 .containsExactly(room1);
     }
+
+    /**
+     * Testar att en bokning kan avbokas när den existerar och ännu inte har påbörjats.
+     * <p>
+     * Metoden mockar ett rum som innehåller en framtida bokning med angivet boknings-id.
+     * TimeProvider mockas till "nu" för att säkerställa att bokningen ligger i framtiden.
+     * <p>
+     * Testet verifierar att cancelBooking() returnerar true, att bokningen tas bort,
+     * att rummet sparas i repositoryt samt att en avbokningsbekräftelse skickas.
+     */
+    @Test
+    void shouldCancelBookingSuccessfully() throws NotificationException {
+        mockCurrentTime();
+
+        String bookingId = "booking-123";
+
+        Booking booking = mock(Booking.class);
+        when(booking.getStartTime()).thenReturn(start);
+
+        when(room.hasBooking(bookingId)).thenReturn(true);
+        when(room.getBooking(bookingId)).thenReturn(booking);
+
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+
+        boolean result = bookingSystem.cancelBooking(bookingId);
+
+        assertThat(result).isTrue();
+
+        verify(room).removeBooking(bookingId);
+        verify(roomRepository).save(room);
+        verify(notificationService).sendCancellationConfirmation(booking);
+    }
+
+    /**
+     * Testar att cancelBooking() returnerar false när ingen bokning med angivet id finns.
+     * <p>
+     * RoomRepository mockas att returnera ett rum som inte innehåller bokningen.
+     * Eftersom ingen matchande bokning hittas ska metoden avslutas tidigt
+     * utan att spara eller skicka notifiering.
+     */
+    @Test
+    void shouldReturnFalseWhenBookingDoesNotExist() throws NotificationException {
+
+        String bookingId = "missing-booking";
+
+        when(room.hasBooking(bookingId)).thenReturn(false);
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+
+        boolean result = bookingSystem.cancelBooking(bookingId);
+
+        assertThat(result).isFalse();
+
+        verify(roomRepository, never()).save(any());
+        verify(notificationService, never()).sendCancellationConfirmation(any());
+    }
+
+    /**
+     * Testar att cancelBooking() kastar IllegalStateException
+     * när bokningen redan har påbörjats.
+     * <p>
+     * Bokningens starttid sätts till före "nu", vilket innebär
+     * att den inte längre får avbokas enligt affärsreglerna.
+     * <p>
+     * Testet verifierar att ingen borttagning, sparning eller
+     * notifiering sker när avbokningen nekas.
+     */
+    @Test
+    void shouldThrowIfCancellingStartedBooking() throws NotificationException {
+
+        mockCurrentTime();
+
+        String bookingId = "started-booking";
+
+        Booking booking = mock(Booking.class);
+
+        when(booking.getStartTime()).thenReturn(now.minusMinutes(10));
+
+        when(room.hasBooking(bookingId)).thenReturn(true);
+        when(room.getBooking(bookingId)).thenReturn(booking);
+
+        when(roomRepository.findAll()).thenReturn(List.of(room));
+
+        assertThrows(IllegalStateException.class,
+                () -> bookingSystem.cancelBooking(bookingId));
+
+        verify(room, never()).removeBooking(any());
+        verify(roomRepository, never()).save(any());
+        verify(notificationService, never()).sendCancellationConfirmation(any());
+    }
 }
