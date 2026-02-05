@@ -21,6 +21,14 @@ class ShoppingCartTest {
      * <p>
      * Sedan förra commit har klassen "ShoppingCart" implementerats,
      * så nu lyckas samma test.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 – Refactor:
+     * <p>
+     * Klassen "ShoppingCart" har refaktorerats för bättre struktur,
+     * till exempel genom att lagra varor i en lista och hantera kvantitet
+     * med en loop. Testet fortsätter att gå igenom utan ändringar.
      */
     @Test
     void shouldAddItemToCart() {
