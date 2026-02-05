@@ -3,6 +3,9 @@ package com.example;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -157,41 +161,63 @@ class BookingSystemTest {
     }
 
     /**
-     * Testar att ett IllegalArgumentException kastas när starttid ligger i det förflutna.
+     * Testar att ett IllegalArgumentException kastas när ogiltiga bokningstider anges.
      * <p>
-     * Metoden skapar en starttid som är en timme tidigare än den aktuella tiden (now)
-     * och försöker boka ett rum med denna tid. Eftersom BookingSystem inte tillåter bokning
-     * i dåtid, förväntas metoden bookRoom kasta ett IllegalArgumentException.
+     * Metoden mockar först den aktuella tiden via mockCurrentTime() och konfigurerar
+     * RoomRepository att returnera ett mockat rum för det angivna rums-id:t.
+     * Den kör sedan bookRoom() med olika kombinationer av start- och sluttider
+     * som är ogiltiga.
      * <p>
-     * Testet kontrollerar att undantaget verkligen kastas och att felmeddelandet är korrekt.
-     * Detta säkerställer att bokningssystemet inte accepterar ogiltiga starttider.
+     * Testet kontrollerar att bookRoom() kastar IllegalArgumentException för:
+     * starttid i dåtid, sluttid före starttid eller sluttid som är lika med starttid.
+     * <p>
+     * Detta säkerställer att bokningssystemet korrekt hanterar ogiltiga tidsintervall
+     * och inte tillåter bokningar som bryter mot affärsreglerna.
      */
-    @Test
-    void shouldThrowIfStartTimeIsInThePast() {
+    @ParameterizedTest(name = "Start={0}, End={1} ska ge IllegalArgumentException")
+    @MethodSource("invalidBookingTimes")
+    void shouldThrowForInvalidBookingTimes(LocalDateTime start,
+                                           LocalDateTime end) {
         mockCurrentTime();
-        LocalDateTime past = now.minusHours(1);
+
+        when(roomRepository.findById("Rum 1"))
+                .thenReturn(Optional.of(room));
 
         assertThrows(IllegalArgumentException.class,
-                () -> bookingSystem.bookRoom("Rum 1", past, end));
+                () -> bookingSystem.bookRoom("Rum 1", start, end));
     }
 
     /**
-     * Testar att ett IllegalArgumentException kastas när sluttid ligger före starttid.
+     * Provider för ogiltiga bokningstider som används i shouldThrowForInvalidBookingTimes().
      * <p>
-     * Metoden skapar en sluttid som ligger en minut innan starttiden ("start")
-     * och försöker boka ett rum med dessa tider. Eftersom BookingSystem kräver att sluttiden
-     * alltid är efter starttiden, förväntas metoden bookRoom kasta ett IllegalArgumentException.
+     * Streamen innehåller exempel på starttider och sluttider som inte är tillåtna:
+     * starttid i dåtid, sluttid före starttid samt sluttid lika med starttid.
      * <p>
-     * Testet kontrollerar att undantaget verkligen kastas och att felmeddelandet är korrekt.
-     * Detta säkerställer att bokningssystemet inte accepterar ogiltiga tidsspann.
+     * Dessa värden används av det parameteriserade testet för att säkerställa att
+     * bookRoom() korrekt kastar IllegalArgumentException vid ogiltiga bokningstider.
      */
-    @Test
-    void shouldThrowIfEndBeforeStart() {
-        mockCurrentTime();
-        LocalDateTime invalidEnd = start.minusMinutes(1);
+    private static Stream<Arguments> invalidBookingTimes() {
 
-        assertThrows(IllegalArgumentException.class,
-                () -> bookingSystem.bookRoom("Rum 1", start, invalidEnd));
+        LocalDateTime now =
+                LocalDateTime.of(2026, 2, 1, 10, 0);
+
+        return Stream.of(
+
+                Arguments.of(
+                        now.minusMinutes(1),
+                        now.plusHours(1)
+                ),
+
+                Arguments.of(
+                        now.plusHours(2),
+                        now.plusHours(1)
+                ),
+
+                Arguments.of(
+                        now.plusHours(1),
+                        now.plusHours(1)
+                )
+        );
     }
 
     /**
@@ -309,5 +335,46 @@ class BookingSystemTest {
         verify(room, never()).removeBooking(any());
         verify(roomRepository, never()).save(any());
         verify(notificationService, never()).sendCancellationConfirmation(any());
+    }
+
+    /**
+     * Testar att ett IllegalArgumentException kastas när någon av parametrarna är null.
+     * <p>
+     * Metoden mockar först den aktuella tiden via mockCurrentTime().
+     * Den kör sedan bookRoom() med olika kombinationer av starttid, sluttid och rum-id
+     * där minst en av parametrarna är null.
+     * <p>
+     * Testet kontrollerar att bookRoom() kastar IllegalArgumentException när
+     * starttid, sluttid eller rum-id saknas.
+     * <p>
+     * Detta säkerställer att bokningssystemet inte tillåter bokningar med
+     * ogiltiga eller ofullständiga parametrar och följer affärsreglerna.
+     */
+    @ParameterizedTest(name = "Start={0}, End={1}, RoomId={2} ska ge IllegalArgumentException")
+    @MethodSource("nullBookingArguments")
+    void shouldThrowForNullArguments(LocalDateTime start, LocalDateTime end, String roomId) {
+        mockCurrentTime();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> bookingSystem.bookRoom(roomId, start, end));
+    }
+
+    /**
+     * Provider för null-parametrar som används i shouldThrowForNullArguments().
+     * <p>
+     * Streamen innehåller exempel där starttid, sluttid eller rum-id är null.
+     * <p>
+     * Dessa värden används av det parameteriserade testet för att säkerställa att
+     * bookRoom() korrekt kastar IllegalArgumentException när någon parameter saknas.
+     */
+    private static Stream<Arguments> nullBookingArguments() {
+        LocalDateTime validStart = LocalDateTime.of(2026, 2, 1, 11, 0);
+        LocalDateTime validEnd = validStart.plusHours(1);
+
+        return Stream.of(
+                Arguments.of(null, validEnd, "Rum 1"),   // null start
+                Arguments.of(validStart, null, "Rum 1"), // null end
+                Arguments.of(validStart, validEnd, null) // null roomId
+        );
     }
 }
