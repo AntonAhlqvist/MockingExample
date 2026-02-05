@@ -26,4 +26,24 @@ public class ShoppingCart {
     public int getItemCount() {
         return items.size();
     }
+
+    /**
+     * Tar bort ett angivet antal förekomster av en vara från kundvagnen.
+     * <p>
+     * Loopar genom listan och tar bort varan när den hittas tills
+     * det angivna antalet har tagits bort eller inga fler förekomster finns.
+     */
+    public void removeItem(String name, int quantity) {
+        int count = 0;
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).equals(name)) {
+                items.remove(i);
+                i--;
+                count++;
+                if (count == quantity) {
+                    break;
+                }
+            }
+        }
+    }
 }

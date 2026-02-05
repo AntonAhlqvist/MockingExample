@@ -46,6 +46,14 @@ class ShoppingCartTest {
      * <p>
      * Testet förväntas att misslyckas eftersom metoden "removeItem"
      * inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har metoden "removeItem" implementerats,
+     * så nu lyckas samma test.
+     * <p>
      */
     @Test
     void shouldRemoveItemFromCart() {
