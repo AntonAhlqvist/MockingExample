@@ -28,22 +28,16 @@ public class ShoppingCart {
     }
 
     /**
+     * Efter refaktorering:
+     * <p>
      * Tar bort ett angivet antal förekomster av en vara från kundvagnen.
      * <p>
-     * Loopar genom listan och tar bort varan när den hittas tills
-     * det angivna antalet har tagits bort eller inga fler förekomster finns.
+     * Tar bort varan genom att upprepade gånger ta bort den första
+     * matchande posten i listan tills det angivna antalet har uppnåtts.
      */
     public void removeItem(String name, int quantity) {
-        int count = 0;
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).equals(name)) {
-                items.remove(i);
-                i--;
-                count++;
-                if (count == quantity) {
-                    break;
-                }
-            }
+        for (int i = 0; i < quantity; i++) {
+            items.remove(name);
         }
     }
 }

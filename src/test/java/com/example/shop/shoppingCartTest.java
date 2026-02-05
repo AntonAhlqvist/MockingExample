@@ -54,6 +54,14 @@ class ShoppingCartTest {
      * Sedan förra commit har metoden "removeItem" implementerats,
      * så nu lyckas samma test.
      * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 - Refactor:
+     * <p>
+     * Metoden "removeItem" har refaktorerats till en mer förenklad
+     * och tydligare implementation, där varor tas bort genom att
+     * successivt ta bort den första matchande posten i listan,
+     * utan att testet behövt ändras.
      */
     @Test
     void shouldRemoveItemFromCart() {
