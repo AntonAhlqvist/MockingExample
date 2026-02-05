@@ -38,4 +38,24 @@ class ShoppingCartTest {
 
         assertEquals(1, cart.getItemCount());
     }
+
+    /**
+     * Steg 1 - Red
+     * <p>
+     * Testar att det går att ta bort varor från kundvagnen.
+     * <p>
+     * Testet förväntas att misslyckas eftersom metoden "removeItem"
+     * inte är implementerad.
+     */
+    @Test
+    void shouldRemoveItemFromCart() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 3);
+        cart.addItem("Hockeybiljetter", 5.0, 2);
+
+        cart.removeItem("Mango", 2);
+
+        assertEquals(3, cart.getItemCount());
+    }
 }
