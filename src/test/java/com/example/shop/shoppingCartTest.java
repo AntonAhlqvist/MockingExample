@@ -84,13 +84,21 @@ class ShoppingCartTest {
      * <p>
      * Förväntas misslyckas eftersom metoden getTotalPrice()
      * ännu inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har metoden "getTotalPrice" implementerats,
+     * så nu lyckas samma test.
+     * <p>
      */
     @Test
     void shouldCalculateTotalPrice() {
         ShoppingCart cart = new ShoppingCart();
 
-        cart.addItems("Mango", 10.0, 2);
-        cart.addItems("Hockeybiljetter", 275.0, 1);
+        cart.addItem("Mango", 10.0, 2);
+        cart.addItem("Hockeybiljetter", 275.0, 1);
 
         BigDecimal total = cart.getTotalPrice();
 

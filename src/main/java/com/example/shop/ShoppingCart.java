@@ -1,11 +1,28 @@
 package com.example.shop;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingCart {
 
-    private List<String> items = new ArrayList<>();
+    private static class Item {
+        String name;
+        BigDecimal price;
+
+        /**
+         * Representerar en vara i kundvagnen.
+         * <p>
+         * Sparar namn och pris på varan. Pris lagras som BigDecimal
+         * för korrekt hantering av decimaler.
+         */
+        Item(String name, double price) {
+            this.name = name;
+            this.price = BigDecimal.valueOf(price);
+        }
+    }
+
+    private List<Item> items = new ArrayList<>();
 
     /**
      * Efter refaktorering:
@@ -15,7 +32,7 @@ public class ShoppingCart {
      */
     public void addItem(String name, double price, int quantity) {
         for (int i = 0; i < quantity; i++) {
-            items.add(name);
+            items.add(new Item(name, price));
         }
     }
 
@@ -32,12 +49,33 @@ public class ShoppingCart {
      * <p>
      * Tar bort ett angivet antal förekomster av en vara från kundvagnen.
      * <p>
-     * Tar bort varan genom att upprepade gånger ta bort den första
-     * matchande posten i listan tills det angivna antalet har uppnåtts.
+     * Metoden går igenom listan med varor och tar bort den första
+     * matchande varan upprepade gånger tills det angivna antalet varor har
+     * tagits bort. Index justeras vid varje borttagning för att undvika
+     * hopp över element i listan.
      */
     public void removeItem(String name, int quantity) {
-        for (int i = 0; i < quantity; i++) {
-            items.remove(name);
+        int removed = 0;
+        for (int i = 0; i < items.size() && removed < quantity; i++) {
+            if (items.get(i).name.equals(name)) {
+                items.remove(i);
+                i--;
+                removed++;
+            }
         }
+    }
+
+    /**
+     * Beräknar totalpriset för alla varor i kundvagnen.
+     * <p>
+     * Loopar genom listan med varor och summerar priset för varje vara.
+     * BigDecimal används för att hantera decimaler korrekt.
+     */
+    public BigDecimal getTotalPrice() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (Item item : items) {
+            total = total.add(item.price);
+        }
+        return total;
     }
 }
