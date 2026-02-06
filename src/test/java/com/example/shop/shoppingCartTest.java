@@ -2,6 +2,8 @@ package com.example.shop;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ShoppingCartTest {
@@ -68,10 +70,31 @@ class ShoppingCartTest {
         ShoppingCart cart = new ShoppingCart();
 
         cart.addItem("Mango", 10.0, 3);
-        cart.addItem("Hockeybiljetter", 5.0, 2);
+        cart.addItem("Hockeybiljetter", 275.0, 2);
 
         cart.removeItem("Mango", 2);
 
         assertEquals(3, cart.getItemCount());
+    }
+
+    /**
+     * Steg 1 - Red
+     * <p>
+     * Testar att kundvagnen kan beräkna totalpriset korrekt.
+     * <p>
+     * Förväntas misslyckas eftersom metoden getTotalPrice()
+     * ännu inte är implementerad.
+     */
+    @Test
+    void shouldCalculateTotalPrice() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItems("Mango", 10.0, 2);
+        cart.addItems("Hockeybiljetter", 275.0, 1);
+
+        BigDecimal total = cart.getTotalPrice();
+
+        BigDecimal expected = BigDecimal.valueOf(295.0);
+        assertEquals(0, expected.compareTo(total));
     }
 }
