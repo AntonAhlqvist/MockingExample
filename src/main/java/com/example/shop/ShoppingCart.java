@@ -66,16 +66,28 @@ public class ShoppingCart {
     }
 
     /**
+     * Efter refaktorering:
+     * <p>
      * Beräknar totalpriset för alla varor i kundvagnen.
      * <p>
      * Loopar genom listan med varor och summerar priset för varje vara.
      * BigDecimal används för att hantera decimaler korrekt.
+     * <p>
+     * Metoden fungerar även om kundvagnen är tom och returnerar då
+     * BigDecimal.ZERO, vilket skrivs ut som 0, utan att orsaka fel
+     * eller undantag.
      */
     public BigDecimal getTotalPrice() {
         BigDecimal total = BigDecimal.ZERO;
-        for (Item item : items) {
-            total = total.add(item.price);
+
+        if (items != null) {
+            for (Item vara : items) {
+                if (vara != null && vara.price != null) {
+                    total = total.add(vara.price);
+                }
+            }
         }
+
         return total;
     }
 }

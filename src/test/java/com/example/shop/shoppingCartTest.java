@@ -92,6 +92,12 @@ class ShoppingCartTest {
      * Sedan förra commit har metoden "getTotalPrice" implementerats,
      * så nu lyckas samma test.
      * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 - Refactor:
+     * <p>
+     * "getTotalPrice" har refaktorerats till en mer robust version, som nu
+     * kan hantera även tomma listor av varor, utan att testet har ändrats.
      */
     @Test
     void shouldCalculateTotalPrice() {
