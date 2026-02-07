@@ -92,18 +92,31 @@ public class ShoppingCart {
     }
 
     /**
+     * Efter refaktorering:
+     * <p>
      * Applicerar en procentuell rabatt på alla varor i kundvagnen.
      * <p>
-     * Rabatt anges i procent. Priset på varje
-     * vara uppdateras proportionellt.
+     * Rabatt anges i procent. Metoden uppdaterar priset
+     * på varje vara proportionellt och rundar till två decimaler.
+     * BigDecimal används för korrekt hantering av decimaler.
+     * <p>
+     * Metoden kraschar inte om listan är tom eller innehåller null.
+     * Rabatten begränsas till intervallet 0–100 %.
      */
     public void applyDiscount(double percent) {
-        if (percent <= 0.0) return; // ingen rabatt
+        if (items == null || items.isEmpty()) return;
+        if (percent <= 0.0) return;
+        if (percent > 100.0) percent = 100.0;
+
         BigDecimal discountFactor = BigDecimal.valueOf(100.0 - percent)
                 .divide(BigDecimal.valueOf(100.0));
 
         for (Item vara : items) {
-            vara.price = vara.price.multiply(discountFactor);
+            if (vara != null && vara.price != null) {
+
+                vara.price = vara.price.multiply(discountFactor)
+                        .setScale(2, BigDecimal.ROUND_HALF_UP);
+            }
         }
     }
 }

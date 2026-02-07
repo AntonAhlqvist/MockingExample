@@ -127,6 +127,14 @@ class ShoppingCartTest {
      * Sedan förra commit har metoden "applyDiscount" implementerats,
      * så nu lyckas samma test.
      * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 - Refactor:
+     * <p>
+     * "applyDiscount" har refaktorerats för att vara mer robust,
+     * så att metoden klarar tomma listor och null-varor, begränsar
+     * rabatten till 0–100 %, och rundar priset till två decimaler.
+     * Testet fortsätter att gå igenom utan ändringar.
      */
     @Test
     void shouldApplyDiscountToTotalPrice() {
