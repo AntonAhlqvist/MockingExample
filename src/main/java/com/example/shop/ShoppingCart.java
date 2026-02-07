@@ -90,4 +90,20 @@ public class ShoppingCart {
 
         return total;
     }
+
+    /**
+     * Applicerar en procentuell rabatt på alla varor i kundvagnen.
+     * <p>
+     * Rabatt anges i procent. Priset på varje
+     * vara uppdateras proportionellt.
+     */
+    public void applyDiscount(double percent) {
+        if (percent <= 0.0) return; // ingen rabatt
+        BigDecimal discountFactor = BigDecimal.valueOf(100.0 - percent)
+                .divide(BigDecimal.valueOf(100.0));
+
+        for (Item vara : items) {
+            vara.price = vara.price.multiply(discountFactor);
+        }
+    }
 }

@@ -42,7 +42,7 @@ class ShoppingCartTest {
     }
 
     /**
-     * Steg 1 - Red
+     * Steg 1 - Red:
      * <p>
      * Testar att det går att ta bort varor från kundvagnen.
      * <p>
@@ -78,7 +78,7 @@ class ShoppingCartTest {
     }
 
     /**
-     * Steg 1 - Red
+     * Steg 1 - Red:
      * <p>
      * Testar att kundvagnen kan beräkna totalpriset korrekt.
      * <p>
@@ -113,12 +113,19 @@ class ShoppingCartTest {
     }
 
     /**
-     * Steg 1 - Red
+     * Steg 1 - Red:
      * <p>
      * Testar att kundvagnen kan beräkna applicera rabatter korrekt.
      * <p>
      * Förväntas misslyckas eftersom metoden "applyDiscount()"
      * ännu inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har metoden "applyDiscount" implementerats,
+     * så nu lyckas samma test.
      * <p>
      */
     @Test
