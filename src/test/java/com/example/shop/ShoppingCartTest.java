@@ -1,0 +1,311 @@
+package com.example.shop;
+
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class ShoppingCartTest {
+
+    /**
+     * Steg 1 – Red:
+     * <p>
+     * Ett enkelt test som kontrollerar att det går att lägga till en vara
+     * i kundvagnen.
+     * <p>
+     * Vid detta steg förväntas testet misslyckas eftersom klassen
+     * "ShoppingCart" ännu inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har klassen "ShoppingCart" implementerats,
+     * så nu lyckas samma test.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 – Refactor:
+     * <p>
+     * Klassen "ShoppingCart" har refaktorerats för bättre struktur,
+     * till exempel genom att lagra varor i en lista och hantera kvantitet
+     * med en loop. Testet fortsätter att gå igenom utan ändringar.
+     */
+    @Test
+    void shouldAddItemToCart() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 1);
+
+        assertEquals(1, cart.getItemCount());
+    }
+
+    /**
+     * Steg 1 - Red:
+     * <p>
+     * Testar att det går att ta bort varor från kundvagnen.
+     * <p>
+     * Testet förväntas att misslyckas eftersom metoden "removeItem"
+     * inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har metoden "removeItem" implementerats,
+     * så nu lyckas samma test.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 - Refactor:
+     * <p>
+     * Metoden "removeItem" har refaktorerats till en mer förenklad
+     * och tydligare implementation, där varor tas bort genom att
+     * successivt ta bort den första matchande posten i listan,
+     * utan att testet behövt ändras.
+     */
+    @Test
+    void shouldRemoveItemFromCart() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 3);
+        cart.addItem("Hockeybiljetter", 275.0, 2);
+
+        cart.removeItem("Mango", 2);
+
+        assertEquals(3, cart.getItemCount());
+    }
+
+    /**
+     * Steg 1 - Red:
+     * <p>
+     * Testar att kundvagnen kan beräkna totalpriset korrekt.
+     * <p>
+     * Förväntas misslyckas eftersom metoden getTotalPrice()
+     * ännu inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har metoden "getTotalPrice" implementerats,
+     * så nu lyckas samma test.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 - Refactor:
+     * <p>
+     * "getTotalPrice" har refaktorerats till en mer robust version, som nu
+     * kan hantera även tomma listor av varor, utan att testet har ändrats.
+     */
+    @Test
+    void shouldCalculateTotalPrice() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 2);
+        cart.addItem("Hockeybiljetter", 275.0, 1);
+
+        BigDecimal total = cart.getTotalPrice();
+
+        BigDecimal expected = BigDecimal.valueOf(295.0);
+        assertEquals(0, expected.compareTo(total));
+    }
+
+    /**
+     * Steg 1 - Red:
+     * <p>
+     * Testar att kundvagnen kan beräkna rabatter korrekt.
+     * <p>
+     * Förväntas misslyckas eftersom metoden "applyDiscount()"
+     * ännu inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har metoden "applyDiscount" implementerats,
+     * så nu lyckas samma test.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 - Refactor:
+     * <p>
+     * "applyDiscount" har refaktorerats för att vara mer robust,
+     * så att metoden klarar tomma listor och null-varor, begränsar
+     * rabatten till 0–100 %, och rundar priset till två decimaler.
+     * Testet fortsätter att gå igenom utan ändringar.
+     */
+    @Test
+    void shouldApplyDiscountToTotalPrice() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 2);
+        cart.addItem("Hockeybiljetter", 275.0, 1);
+
+        BigDecimal totalBeforeDiscount = cart.getTotalPrice();
+        BigDecimal expectedBefore = BigDecimal.valueOf(295.0);
+        assertEquals(0, expectedBefore.compareTo(totalBeforeDiscount));
+
+        cart.applyDiscount(15.0);
+
+        BigDecimal totalAfterDiscount = cart.getTotalPrice();
+        BigDecimal expectedAfter = BigDecimal.valueOf(250.75);
+        assertEquals(0, expectedAfter.compareTo(totalAfterDiscount));
+    }
+
+    /**
+     * Steg 1 - Red:
+     * <p>
+     * Testar att kundvagnen kan hantera kvantiteter korrekt.
+     * <p>
+     * Förväntas misslyckas eftersom metoden "updateItemQuantity()"
+     * ännu inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har metoden "updateItemQuantity" implementerats,
+     * så nu lyckas samma test.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 - Refactor:
+     * <p>
+     * "updateItemQuantity" har refaktorerats för att vara mer robust,
+     * så att metoden klarar tomma listor, varor som inte finns, och ogiltiga
+     * kvantiteter (t.ex. negativa värden). Testet fortsätter att gå igenom
+     * utan ändringar.
+     */
+    @Test
+    void shouldUpdateQuantityOfItem() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 3);
+        cart.addItem("Hockeybiljetter", 275.0, 2);
+
+        cart.updateItemQuantity("Mango", 5);
+
+        assertEquals(7, cart.getItemCount());
+
+        BigDecimal expectedTotal = BigDecimal.valueOf(5 * 10.0 + 2 * 275.0);
+        BigDecimal actualTotal = cart.getTotalPrice();
+        assertEquals(0, expectedTotal.compareTo(actualTotal));
+    }
+
+    /**
+     * Säkerställer att varor med ogiltig kvantitet inte läggs till i kundvagnen.
+     * <p>
+     * Testet försöker lägga till varor med kvantitet 0 och negativa värden.
+     * Koden kontrollerar att kundvagnen förblir tom och att totalpriset är 0.
+     */
+    @Test
+    void shouldIgnoreInvalidQuantity() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 0);
+        cart.addItem("Banana", 5.0, -3);
+
+        assertEquals(0, cart.getItemCount());
+        assertEquals(BigDecimal.ZERO, cart.getTotalPrice());
+    }
+
+    /**
+     * Säkerställer att borttagning av fler varor än som finns inte orsakar fel.
+     * <p>
+     * Testet lägger till två varor och försöker sedan ta bort fem.
+     * Koden kontrollerar att kundvagnen blir tom utan att något undantag kastas.
+     */
+    @Test
+    void shouldHandleExcessiveRemove() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 2);
+        cart.removeItem("Mango", 5);
+
+        assertEquals(0, cart.getItemCount());
+    }
+
+    /**
+     * Kontrollerar att uppdatering av kvantitet till 0 eller negativt hanteras korrekt.
+     * <p>
+     * Testet sätter först kvantiteten på en vara till 0, vilket tar bort den från kundvagnen.
+     * Sedan försöker det sätta en negativ kvantitet, vilket ignoreras och lämnar kundvagnen oförändrad.
+     */
+    @Test
+    void shouldHandleZeroOrNegativeQuantity() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 2);
+
+        cart.updateItemQuantity("Mango", 0);
+        assertEquals(0, cart.getItemCount());
+
+        cart.addItem("Banana", 5.0, 2);
+        cart.updateItemQuantity("Banana", -3);
+        assertEquals(2, cart.getItemCount());
+    }
+
+    /**
+     * Säkerställer att extrema rabattvärden hanteras korrekt.
+     * <p>
+     * Testet applicerar rabatt på en tom kundvagn, negativa procentvärden och över 100 %.
+     * Koden kontrollerar att inga fel uppstår och att totalpriset uppdateras korrekt.
+     */
+    @Test
+    void shouldHandleExtremeDiscountValues() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.applyDiscount(50);
+        assertEquals(0, cart.getItemCount());
+        assertEquals(BigDecimal.ZERO, cart.getTotalPrice());
+
+        cart.addItem("Mango", 10.0, 2);
+        cart.applyDiscount(-10);
+        BigDecimal expected = BigDecimal.valueOf(20.0);
+        assertEquals(0, expected.compareTo(cart.getTotalPrice()));
+
+        cart.applyDiscount(150);
+        expected = BigDecimal.valueOf(0.0);
+        assertEquals(0, expected.compareTo(cart.getTotalPrice()));
+    }
+
+    /**
+     * Kontrollerar att uppdatering eller borttagning av icke-existerande varor inte orsakar fel.
+     * <p>
+     * Testet försöker ta bort och uppdatera en vara som inte finns i kundvagnen.
+     * Koden verifierar att kundvagnen förblir oförändrad och att totalpriset är korrekt.
+     */
+    @Test
+    void shouldIgnoreNonExistingItem() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 2);
+
+        cart.removeItem("Banana", 1);
+        cart.updateItemQuantity("Banana", 5);
+
+        assertEquals(2, cart.getItemCount());
+        assertEquals(BigDecimal.valueOf(20.0), cart.getTotalPrice());
+    }
+
+    /**
+     * Säkerställer korrekt hantering av hög precision och stora kvantiteter.
+     * <p>
+     * Testet lägger till många varor med decimaltal som har flera decimaler.
+     * Koden kontrollerar att totalpriset beräknas korrekt och avrundas till två decimaler.
+     */
+    @Test
+    void shouldHandleLargeQuantities() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Gold", 0.123456, 10000);
+
+        BigDecimal total = cart.getTotalPrice();
+        BigDecimal expected = BigDecimal.valueOf(1234.56).setScale(2, RoundingMode.HALF_UP);
+
+        assertEquals(0, expected.compareTo(total));
+    }
+}
