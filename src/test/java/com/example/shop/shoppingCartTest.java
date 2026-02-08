@@ -168,6 +168,15 @@ class ShoppingCartTest {
      * <p>
      * Sedan förra commit har metoden "updateItemQuantity" implementerats,
      * så nu lyckas samma test.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 3 - Refactor:
+     * <p>
+     * "updateItemQuantity" har refaktorerats för att vara mer robust,
+     * så att metoden klarar tomma listor, varor som inte finns, och ogiltiga
+     * kvantiteter (t.ex. negativa värden). Testet fortsätter att gå igenom
+     * utan ändringar.
      */
     @Test
     void shouldUpdateQuantityOfItem() {

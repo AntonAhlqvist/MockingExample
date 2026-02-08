@@ -121,25 +121,42 @@ public class ShoppingCart {
     }
 
     /**
+     * Letar upp den första förekomsten av en vara med angivet namn
+     * i kundvagnen.
+     * <p>
+     * Loopar genom listan med varor och returnerar den första matchande
+     * varan som hittas. Om ingen matchande vara finns, returneras null.
+     */
+    private Item findFirstItemByName(String name) {
+        for (Item item : items) {
+            if (item.name.equals(name)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Efter refaktorering:
+     * <p>
      * Uppdaterar kvantiteten för en viss vara i kundvagnen.
      * <p>
-     * Tar bort alla befintliga förekomster av varan och lägger sedan
-     * till det angivna antalet på nytt med samma pris.
+     * Metoden hittar först priset på varan och tar sedan bort alla befintliga
+     * förekomster av den i kundvagnen. Därefter läggs det angivna antalet
+     * varor till igen med samma pris.
+     * <p>
+     * Metoden är robust mot tomma listor, varor som inte finns, och
+     * ogiltiga kvantiteter (t.ex. negativa värden).
      */
     public void updateItemQuantity(String name, int newQuantity) {
 
-        if (newQuantity < 0) return;
+        if (newQuantity < 0 || items.isEmpty()) return;
 
-        BigDecimal price = null;
+        Item existingItem = findFirstItemByName(name);
 
-        for (Item item : items) {
-            if (item.name.equals(name)) {
-                price = item.price;
-                break;
-            }
-        }
+        if (existingItem == null) return;
 
-        if (price == null) return;
+        BigDecimal price = existingItem.price;
 
         items.removeIf(item -> item.name.equals(name));
 
