@@ -3,6 +3,7 @@ package com.example.shop;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -245,5 +246,66 @@ class ShoppingCartTest {
         cart.addItem("Banana", 5.0, 2);
         cart.updateItemQuantity("Banana", -3);
         assertEquals(2, cart.getItemCount());
+    }
+
+    /**
+     * Säkerställer att extrema rabattvärden hanteras korrekt.
+     * <p>
+     * Testet applicerar rabatt på en tom kundvagn, negativa procentvärden och över 100 %.
+     * Koden kontrollerar att inga fel uppstår och att totalpriset uppdateras korrekt.
+     */
+    @Test
+    void shouldHandleExtremeDiscountValues() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.applyDiscount(50);
+        assertEquals(0, cart.getItemCount());
+        assertEquals(BigDecimal.ZERO, cart.getTotalPrice());
+
+        cart.addItem("Mango", 10.0, 2);
+        cart.applyDiscount(-10);
+        BigDecimal expected = BigDecimal.valueOf(20.0);
+        assertEquals(0, expected.compareTo(cart.getTotalPrice()));
+
+        cart.applyDiscount(150);
+        expected = BigDecimal.valueOf(0.0);
+        assertEquals(0, expected.compareTo(cart.getTotalPrice()));
+    }
+
+    /**
+     * Kontrollerar att uppdatering eller borttagning av icke-existerande varor inte orsakar fel.
+     * <p>
+     * Testet försöker ta bort och uppdatera en vara som inte finns i kundvagnen.
+     * Koden verifierar att kundvagnen förblir oförändrad och att totalpriset är korrekt.
+     */
+    @Test
+    void shouldIgnoreNonExistingItem() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 2);
+
+        cart.removeItem("Banana", 1);
+        cart.updateItemQuantity("Banana", 5);
+
+        assertEquals(2, cart.getItemCount());
+        assertEquals(BigDecimal.valueOf(20.0), cart.getTotalPrice());
+    }
+
+    /**
+     * Säkerställer korrekt hantering av hög precision och stora kvantiteter.
+     * <p>
+     * Testet lägger till många varor med decimaltal som har flera decimaler.
+     * Koden kontrollerar att totalpriset beräknas korrekt och avrundas till två decimaler.
+     */
+    @Test
+    void shouldHandleLargeQuantities() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Gold", 0.123456, 10000);
+
+        BigDecimal total = cart.getTotalPrice();
+        BigDecimal expected = BigDecimal.valueOf(1234.56).setScale(2, RoundingMode.HALF_UP);
+
+        assertEquals(0, expected.compareTo(total));
     }
 }
