@@ -1,24 +1,30 @@
 package com.example.shop;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingCart {
 
+    /**
+     * Representerar en vara i kundvagnen.
+     * <p>
+     * Sparar namn och pris på varan. Pris lagras som BigDecimal
+     * för korrekt hantering av decimaler.
+     */
     private static class Item {
         String name;
         BigDecimal price;
 
-        /**
-         * Representerar en vara i kundvagnen.
-         * <p>
-         * Sparar namn och pris på varan. Pris lagras som BigDecimal
-         * för korrekt hantering av decimaler.
-         */
         Item(String name, double price) {
             this.name = name;
             this.price = BigDecimal.valueOf(price);
+        }
+
+        Item(String name, BigDecimal price) {
+            this.name = name;
+            this.price = price;
         }
     }
 
@@ -115,7 +121,7 @@ public class ShoppingCart {
             if (vara != null && vara.price != null) {
 
                 vara.price = vara.price.multiply(discountFactor)
-                        .setScale(2, BigDecimal.ROUND_HALF_UP);
+                        .setScale(2, RoundingMode.HALF_UP);
             }
         }
     }
@@ -161,7 +167,7 @@ public class ShoppingCart {
         items.removeIf(item -> item.name.equals(name));
 
         for (int i = 0; i < newQuantity; i++) {
-            items.add(new Item(name, price.doubleValue()));
+            items.add(new Item(name, price));
         }
     }
 }
