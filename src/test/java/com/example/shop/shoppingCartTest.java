@@ -193,4 +193,57 @@ class ShoppingCartTest {
         BigDecimal actualTotal = cart.getTotalPrice();
         assertEquals(0, expectedTotal.compareTo(actualTotal));
     }
+
+    /**
+     * Säkerställer att varor med ogiltig kvantitet inte läggs till i kundvagnen.
+     * <p>
+     * Testet försöker lägga till varor med kvantitet 0 och negativa värden.
+     * Koden kontrollerar att kundvagnen förblir tom och att totalpriset är 0.
+     */
+    @Test
+    void shouldIgnoreInvalidQuantity() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 0);
+        cart.addItem("Banana", 5.0, -3);
+
+        assertEquals(0, cart.getItemCount());
+        assertEquals(BigDecimal.ZERO, cart.getTotalPrice());
+    }
+
+    /**
+     * Säkerställer att borttagning av fler varor än som finns inte orsakar fel.
+     * <p>
+     * Testet lägger till två varor och försöker sedan ta bort fem.
+     * Koden kontrollerar att kundvagnen blir tom utan att något undantag kastas.
+     */
+    @Test
+    void shouldHandleExcessiveRemove() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 2);
+        cart.removeItem("Mango", 5);
+
+        assertEquals(0, cart.getItemCount());
+    }
+
+    /**
+     * Kontrollerar att uppdatering av kvantitet till 0 eller negativt hanteras korrekt.
+     * <p>
+     * Testet sätter först kvantiteten på en vara till 0, vilket tar bort den från kundvagnen.
+     * Sedan försöker det sätta en negativ kvantitet, vilket ignoreras och lämnar kundvagnen oförändrad.
+     */
+    @Test
+    void shouldHandleZeroOrNegativeQuantity() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 2);
+
+        cart.updateItemQuantity("Mango", 0);
+        assertEquals(0, cart.getItemCount());
+
+        cart.addItem("Banana", 5.0, 2);
+        cart.updateItemQuantity("Banana", -3);
+        assertEquals(2, cart.getItemCount());
+    }
 }
