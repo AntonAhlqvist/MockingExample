@@ -161,6 +161,13 @@ class ShoppingCartTest {
      * <p>
      * Förväntas misslyckas eftersom metoden "updateItemQuantity()"
      * ännu inte är implementerad.
+     * <p>
+     * --------------------------------------------------------------------
+     * <p>
+     * Steg 2 - Green:
+     * <p>
+     * Sedan förra commit har metoden "updateItemQuantity" implementerats,
+     * så nu lyckas samma test.
      */
     @Test
     void shouldUpdateQuantityOfItem() {

@@ -119,4 +119,32 @@ public class ShoppingCart {
             }
         }
     }
+
+    /**
+     * Uppdaterar kvantiteten för en viss vara i kundvagnen.
+     * <p>
+     * Tar bort alla befintliga förekomster av varan och lägger sedan
+     * till det angivna antalet på nytt med samma pris.
+     */
+    public void updateItemQuantity(String name, int newQuantity) {
+
+        if (newQuantity < 0) return;
+
+        BigDecimal price = null;
+
+        for (Item item : items) {
+            if (item.name.equals(name)) {
+                price = item.price;
+                break;
+            }
+        }
+
+        if (price == null) return;
+
+        items.removeIf(item -> item.name.equals(name));
+
+        for (int i = 0; i < newQuantity; i++) {
+            items.add(new Item(name, price.doubleValue()));
+        }
+    }
 }
