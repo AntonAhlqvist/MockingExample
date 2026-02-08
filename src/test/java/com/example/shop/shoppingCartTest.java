@@ -115,7 +115,7 @@ class ShoppingCartTest {
     /**
      * Steg 1 - Red:
      * <p>
-     * Testar att kundvagnen kan beräkna applicera rabatter korrekt.
+     * Testar att kundvagnen kan beräkna rabatter korrekt.
      * <p>
      * Förväntas misslyckas eftersom metoden "applyDiscount()"
      * ännu inte är implementerad.
@@ -152,5 +152,29 @@ class ShoppingCartTest {
         BigDecimal totalAfterDiscount = cart.getTotalPrice();
         BigDecimal expectedAfter = BigDecimal.valueOf(250.75);
         assertEquals(0, expectedAfter.compareTo(totalAfterDiscount));
+    }
+
+    /**
+     * Steg 1 - Red:
+     * <p>
+     * Testar att kundvagnen kan hantera kvantiteter korrekt.
+     * <p>
+     * Förväntas misslyckas eftersom metoden "updateItemQuantity()"
+     * ännu inte är implementerad.
+     */
+    @Test
+    void shouldUpdateQuantityOfItem() {
+        ShoppingCart cart = new ShoppingCart();
+
+        cart.addItem("Mango", 10.0, 3);
+        cart.addItem("Hockeybiljetter", 275.0, 2);
+
+        cart.updateItemQuantity("Mango", 5);
+
+        assertEquals(7, cart.getItemCount());
+
+        BigDecimal expectedTotal = BigDecimal.valueOf(5 * 10.0 + 2 * 275.0);
+        BigDecimal actualTotal = cart.getTotalPrice();
+        assertEquals(0, expectedTotal.compareTo(actualTotal));
     }
 }
